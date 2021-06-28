@@ -356,3 +356,42 @@ while循环练习题
 
 ![image-20210626105008475](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210626105008475.png)
 
+###### 4.4.2 do...while循环语句
+
+作用：满足循环条件，执行循环条件
+
+语法：
+
+```
+do{循环语句} while （循环条件）；
+```
+
+注意：与while的区别在于do...while会先执行一次循环语句，在判断循环条件
+
+![image-20210627073257457](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210627073257457.png)
+
+练习题水仙花数
+
+![image-20210627080735434](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210627080735434.png)
+
+在C++中整数和整数之间除法，返回值也是==整数无论是否整除==
+
+###### 4.2.3 for循环
+
+作用：满足循环条件，执行循环语句
+
+语法：
+
+```
+fo（起始表达式；条件表达式；结尾表达式）{ 循环语句； }
+```
+
+for循环执行步骤示意图：
+
+![image-20210628150900978](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210628150900978.png)
+
+| 注意：for循环中的表达式要用分号进行分割
+
+| 总结：while，do…while，for都是开发中常用的循环语句，for循环结构比较清晰
+
+练习案例：敲桌子。从1开始数到数字100，如果数字个位含有7，或者十位数字含有7，或者是7的倍数，我们打印敲桌子，其余数字直接打印输出。
