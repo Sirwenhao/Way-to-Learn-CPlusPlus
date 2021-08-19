@@ -1,72 +1,77 @@
 #include<iostream>
 using namespace std;
 
-//点和圆的关系案例
+//原函数想调用点类和圆类时，只需要将头文件包含进来即可
+#include"point.h"
+#include"circle.h"
 
-//点类
-class Point 
-{
-public:
+//点和圆的关系案例   且将Point做成分文件编写
 
-	//设置x
-	void setX(int x)
-	{
-		m_X = x;
-	}
-	//获取x
-	int getX()
-	{
-		return m_X;
-	}
-
-	//设置y
-	void setY(int y)
-	{
-		m_Y = y;
-	}
-	//获取x
-	int getY()
-	{
-		return m_Y;
-	}
-
-private:
-	int m_X;
-	int m_Y;
-
-};
+////点类
+//class Point 
+//{
+//public:
+//
+//	//设置x
+//	void setX(int x)
+//	{
+//		m_X = x;
+//	}
+//	//获取x
+//	int getX()
+//	{
+//		return m_X;
+//	}
+//
+//	//设置y
+//	void setY(int y)
+//	{
+//		m_Y = y;
+//	}
+//	//获取x
+//	int getY()
+//	{
+//		return m_Y;
+//	}
+//
+//private:
+//	int m_X;
+//	int m_Y;
+//
+//};
  
-//圆类
-class Circle 
-{
-public:
-
-	//设置半径
-	void setR(int r)
-	{
-		m_R = r;
-	}
-	//获取半径
-	int getR()
-	{
-		return m_R;
-	}
-
-	//设置圆心
-	void setCenter(Point center)
-	{
-		m_Center = center;
-	}
-	//获取圆心
-	Point getCenter()
-	{
-		return m_Center;
-	}
-private:
-	int m_R;
-
-	Point m_Center;
-};
+////圆类
+//class Circle 
+//{
+//public:
+//
+//	//设置半径
+//	void setR(int r)
+//	{
+//		m_R = r;
+//	}
+//	//获取半径
+//	int getR()
+//	{
+//		return m_R;
+//	}
+//
+//	//设置圆心
+//	void setCenter(Point center)
+//	{
+//		m_Center = center;
+//	}
+//	//获取圆心
+//	Point getCenter()
+//	{
+//		return m_Center;
+//	}
+//private:
+//	int m_R;
+//
+//	//在类中可以让另一个类 作为本类中的成员
+//	Point m_Center;
+//};
 
 //通过全局函数判断点和圆的关系
 void isIncircle(Circle &c, Point &p)
