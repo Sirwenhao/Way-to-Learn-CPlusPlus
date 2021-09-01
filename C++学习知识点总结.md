@@ -1278,19 +1278,19 @@ C++中空指针也是可以调用成员函数的，但是也要注意有没有�
 
 总结：
 
-- 重载左移运算符<<是想实现直接输出对象`cout<<p`即可将对象的所有属性全部输出的操作
-- 不能利用成员函数写重载，因为无法实现`cout`在左侧，需使用全局函数
-- 使用全局函数写的时候，须注意到`cout`属于输出流`ostream`类型
+- 重载左移运算符`<<`是想实现直接输出对象`cout<<p`即可将对象的所有属性全部输出的操作
+- ==不能利用成员函数写重载==，因为无法实现`cout`在左侧，需使用全局函数
+- 使用全局函数写的时候，须注意到`cout`属于==输出流`ostream`类型==
 - 如果属性是私有的，全局函数想要访问属性时必须通过友元这一技术实现
 - 重载左移运算符配合友元可以实现输出自定义的数据类型
 
 ###### 4.5.3 递增运算符重载
 
-作用：同各国递增运算符，实现自己的整形数据
+作用：通过重载递增运算符，实现自己的整型数据
 
 ![image-20210830151130610](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202108301511974.png)
 
-- 红色框内的输出操作是由于`b++`运算的特点是先执行输出操作，在进行`++`操作
+- 红色框内的输出操作是由于`b++`运算的特点是先执行输出操作，再进行`++`操作
 - 蓝色线处是因为`b++`，在执行之后返回值加一，因此在其第二次输出时后进行输出加一之后的值
 
 总结：前置递增返回的是引用，后置递增返回的是值
@@ -1317,4 +1317,241 @@ C++编译器至少给一个类添加4个函数：
 - 函数调用运算符`()`也可以重载
 - 由于重载后使用的方式非常像函数的调用，因此称为==仿函数==
 - 仿函数没有固定写法，非常灵活
+
+##### 4.6 继承
+
+**继承是面向对象三大特性之一（重中之重）**
+
+有些类与类之间存在特殊的关系，如下图：
+
+![image-20210831111422888](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202108311114004.png)
+
+我们发现，定义这些类时，下级别的成员除了拥有上一级的共性，还有自己的特性。这个时候我们可以考虑利用继承的技术，减少重复代码。
+
+###### 4.6.1 继承的基本语法
+
+例如我们看到很多网站中，都有公共的头部，公共的底部，甚至公共的左侧列表，只有中心内容不同。接下来我们分别利用普通写法和继承的写法来实现网页中的内容，看一下继承存在的意义以及好处。
+
+不使用继承写法时：
+
+```
+//Java页面
+class Java 
+{
+public:
+	void header()
+	{
+		cout << "首页、公开课、登录、注册...（公共头部）" << endl;
+	}
+	void footer()
+	{
+		cout << "帮助中心、交流合作、站内地图...(公共底部)" << endl;
+	}
+	void left()
+	{
+		cout << "Java,Python,C++...(公共分类列表)" << endl;
+	}
+	void content()
+	{
+		cout << "JAVA学科视频" << endl;
+	}
+};
+//Python页面
+class Python
+{
+public:
+	void header()
+	{
+		cout << "首页、公开课、登录、注册...（公共头部）" << endl;
+	}
+	void footer()
+	{
+		cout << "帮助中心、交流合作、站内地图...(公共底部)" << endl;
+	}
+	void left()
+	{
+		cout << "Java,Python,C++...(公共分类列表)" << endl;
+	}
+	void content()
+	{
+		cout << "Python学科视频" << endl;
+	}
+};
+//C++页面
+class CPP 
+{
+public:
+	void header()
+	{
+		cout << "首页、公开课、登录、注册...（公共头部）" << endl;
+	}
+	void footer()
+	{
+		cout << "帮助中心、交流合作、站内地图...(公共底部)" << endl;
+	}
+	void left()
+	{
+		cout << "Java,Python,C++...(公共分类列表)" << endl;
+	}
+	void content()
+	{
+		cout << "C++学科视频" << endl;
+	}
+};
+
+void test01()
+{
+	//Java页面
+	cout << "Java下载视频页面如下： " << endl;
+	Java ja;
+	ja.header();
+	ja.footer();
+	ja.left();
+	ja.content();
+	cout << "--------------------" << endl;
+
+	//Python页面
+	cout << "Python下载视频页面如下： " << endl;
+	Python py;
+	py.header();
+	py.footer();
+	py.left();
+	py.content();
+	cout << "--------------------" << endl;
+
+	//C++页面
+	cout << "C++下载视频页面如下： " << endl;
+	CPP cp;
+	cp.header();
+	cp.footer();
+	cp.left();
+	cp.content();
+
+}
+
+int main() {
+
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+使用继承写法时：
+
+```
+//公共页面
+class BasePage
+{
+public:
+	void header()
+	{
+		cout << "首页、公开课、登录、注册...（公共头部）" << endl;
+	}
+
+	void footer()
+	{
+		cout << "帮助中心、交流合作、站内地图...(公共底部)" << endl;
+	}
+	void left()
+	{
+		cout << "Java,Python,C++...(公共分类列表)" << endl;
+	}
+
+};
+
+//Java页面
+class Java : public BasePage
+{
+public:
+	void content()
+	{
+		cout << "JAVA学科视频" << endl;
+	}
+};
+//Python页面
+class Python : public BasePage
+{
+public:
+	void content()
+	{
+		cout << "Python学科视频" << endl;
+	}
+};
+//C++页面
+class CPP : public BasePage
+{
+public:
+	void content()
+	{
+		cout << "C++学科视频" << endl;
+	}
+};
+
+void test01()
+{
+	//Java页面
+	cout << "Java下载视频页面如下： " << endl;
+	Java ja;
+	ja.header();
+	ja.footer();
+	ja.left();
+	ja.content();
+	cout << "--------------------" << endl;
+
+	//Python页面
+	cout << "Python下载视频页面如下： " << endl;
+	Python py;
+	py.header();
+	py.footer();
+	py.left();
+	py.content();
+	cout << "--------------------" << endl;
+
+	//C++页面
+	cout << "C++下载视频页面如下： " << endl;
+	CPP cp;
+	cp.header();
+	cp.footer();
+	cp.left();
+	cp.content();
+
+
+}
+
+int main() {
+
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+###### 4.6.2 继承方式
+
+继承的语法：`class 子类：继承方式 父类`
+
+继承的方式：三种
+
+- 公共继承
+- 保护继承
+- 私有继承
+
+![image-20210901164421323](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109011644467.png)
+
+###### 4.6.3 继承中的对象模型
+
+问题：从父类继承过来的成员，那些属于子类对象中？
+
+![image-20210901201758517](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109012017703.png)
+
+###### 4.6.4 继承中的构造和析构的顺序
+
+子类继承父类后，当创建子类对象，也会调用父类的构造函数。问题：父类和子类的构造和析构顺序是谁先谁后？
+
+总结：继承中 先调用父类的构造函数，再调用子类构造函数，析构顺序与构造相反
 
