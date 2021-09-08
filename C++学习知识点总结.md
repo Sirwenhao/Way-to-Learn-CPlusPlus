@@ -1651,8 +1651,8 @@ using namespace std;
 class Animal
 {
 public:
-	//Spear函数就是虚函数
-	//函数前面加上virtual关键字，编程虚函数，那么编译器在编译的时候就不能确定函数调用了
+	//Speak函数就是虚函数
+	//函数前面加上virtual关键字，变为虚函数，那么编译器在编译的时候就不能确定函数调用了
 	void speak()   //此处还原成了没有发生多态的情况，此时speak函数为非静态的成员函数，不属于类的对象上，只有非静态的成员变量属于类的对象上。类似于一个空类，空类的大小为一个字节
 	{
 		cout << "动物在说话" << endl;
@@ -1674,15 +1674,14 @@ public:
 class Dog :public Animal
 {
 public:
-
 	void speak()
 	{
 		cout << "小狗在说话" << endl;
 	}
 };
 //我们希望传入什么对象，那么就调用什么对象的函数
-//如果函数地址在编译阶段就能确定，那么静态联编
-//如果函数地址在运行阶段才能确定，就是动态联编
+//如果函数地址在编译阶段就能确定，那么静态多态
+//如果函数地址在运行阶段才能确定，就是动态多态1
 
 //执行说话的函数
 //地址早绑定   在编译阶段确定函数地址
@@ -1730,7 +1729,7 @@ int main()
 
 ![image-20210906212741351](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906212741351.png)
 
-动态多态的原理：由于写了虚函数，类的内部的结构改变，多了一个虚函数表指针，这个指针指向一个虚函数表，虚函数表内部存储的是虚函数的函数入口的地址；当子类重写了父类的虚函数的时候，他会把自身的虚函数表中的函数给替换掉，替换为子类的函数。因此，当使用父类的引用指向子类对象的时候，由于本身还是一个子类对象，所以当调用公共的`speak`接口时，他会从子类中去找入口地址。
+​		动态多态的原理：由于写了虚函数，类的内部的结构改变，多了一个虚函数表指针，这个指针指向一个虚函数表，虚函数表内部存储的是虚函数的函数入口的地址；当子类重写了父类的虚函数的时候，他会把自身的虚函数表中的函数给替换掉，替换为子类的函数。因此，当使用父类的引用指向子类对象的时候，由于本身还是一个子类对象，所以当调用公共的`speak`接口时，他会从子类中去找入口地址。
 
 使用开发人员命令提示工具做验证：
 
@@ -1761,3 +1760,138 @@ int main()
 - 利用前期和后期的扩展以及维护
 
 总结：C++开发提倡利用多态设计程序框架，因为多态优点很多
+
+###### 4.7.3 纯虚函数和抽象类
+
+在多态中，通常父类中虚函数的实现是毫无意义的，主要都是调用子类重写的内容。因此可以将虚函数改为纯虚函数，纯虚函数的语法：
+
+```c++
+virtual 返回值类型 函数名 （参数列表）= 0
+```
+
+当类中有了纯虚函数，这个类也成为抽象类
+
+抽象类特点：
+
+- 无法实例化对象
+- 子类必须重写先抽象类中的纯虚函数，否则也属于抽象类
+
+###### 4.7.4 多态案例二-制作饮品
+
+案例描述：制作饮品的大致流程为：煮水 - 冲泡 - 倒入杯中 - 加入辅料。利用多态技术实现本案例，提供抽象制作饮品基类，提供子类制作咖啡和茶叶。
+
+```c++
+#include<iostream>
+using namespace std;
+
+//多态案例2 制作饮品
+class AbstractDrinking 
+{
+public:
+	//煮水
+	virtual void Boil() = 0;
+
+	//冲泡
+	virtual void Brew() = 0;
+
+	//倒入杯中
+	virtual void PourInCup() = 0;
+
+	//加入辅料
+	virtual void AddSomething() = 0;
+
+	//制作饮品
+	void makeDrink()
+	{
+		Boil();
+		Brew();
+		PourInCup();
+		AddSomething();
+	}
+};
+
+//制作咖啡
+class Coffee :public AbstractDrinking
+{
+public:
+	//煮水
+	virtual void Boil()
+	{
+		cout << "煮农夫山泉" << endl;
+	}
+
+	//冲泡
+	virtual void Brew()
+	{
+		cout << "冲泡咖啡" << endl;
+	}
+
+	//倒入杯中
+	virtual void PourInCup()
+	{
+		cout << "倒入杯中" << endl;
+	}
+
+	//加入辅料
+	virtual void AddSomething()
+	{
+		cout << "加糖和牛奶" << endl;
+	}
+};
+
+//制作茶叶
+class Tea :public AbstractDrinking
+{
+public:
+	//煮水
+	virtual void Boil()
+	{
+		cout << "煮依云" << endl;
+	}
+
+	//冲泡
+	virtual void Brew()
+	{
+		cout << "冲泡茶叶" << endl;
+	}
+
+	//倒入杯中
+	virtual void PourInCup()
+	{
+		cout << "倒入杯中" << endl;
+	}
+
+	//加入辅料
+	virtual void AddSomething()
+	{
+		cout << "加柠檬" << endl;
+	}
+};
+
+//制作函数
+void doWork(AbstractDrinking *abs)//AbstractDrinking *abs = new Coffee
+{
+	abs->makeDrink();
+	delete abs;//堆区的数据手动开辟，需要手动释放
+}
+
+void test01()
+{
+	//制作咖啡
+	doWork(new Coffee);
+
+	cout << "-----------------------" << endl;
+
+	doWork(new Tea);
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
