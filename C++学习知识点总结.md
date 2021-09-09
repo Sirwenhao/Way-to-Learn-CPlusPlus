@@ -1625,8 +1625,8 @@ $vbptr$是指虚基类指针，8和4是指偏移量，此时的`m_Age`只有一�
 
 静态多态和动态多态区别：
 
-- 静态多态的函数地址早绑定 - 编译阶段确定函数地址
-- 动态多态的函数地址晚绑定- 运行阶段确定函数地址
+- 静态多态的函数地址==早==绑定 - ==编译阶段==确定函数地址
+- 动态多态的函数地址==晚==绑定- ==运行阶段==确定函数地址
 
 总结：
 
@@ -1635,9 +1635,9 @@ $vbptr$是指虚基类指针，8和4是指偏移量，此时的`m_Age`只有一�
 - 有继承关系
 - 子类重写父类中的虚函数
 
-多态使用条件：
+**多态使用条件：**
 
-- 父类指针或引用指向子类对象
+- ==父类指针或引用指向子类对象==
 
 重写：==函数返回值类型  函数名  参数列表==  完全一致称为重写
 
@@ -1681,7 +1681,7 @@ public:
 };
 //我们希望传入什么对象，那么就调用什么对象的函数
 //如果函数地址在编译阶段就能确定，那么静态多态
-//如果函数地址在运行阶段才能确定，就是动态多态1
+//如果函数地址在运行阶段才能确定，就是动态多态
 
 //执行说话的函数
 //地址早绑定   在编译阶段确定函数地址
@@ -1729,7 +1729,7 @@ int main()
 
 ![image-20210906212741351](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906212741351.png)
 
-​		动态多态的原理：由于写了虚函数，类的内部的结构改变，多了一个虚函数表指针，这个指针指向一个虚函数表，虚函数表内部存储的是虚函数的函数入口的地址；当子类重写了父类的虚函数的时候，他会把自身的虚函数表中的函数给替换掉，替换为子类的函数。因此，当使用父类的引用指向子类对象的时候，由于本身还是一个子类对象，所以当调用公共的`speak`接口时，他会从子类中去找入口地址。
+​		动态多态的原理：由于写了虚函数，==类的内部的结构改变，多了一个虚函数表指针==，这个指针指向一个虚函数表，==虚函数表内部存储的是虚函数的函数入口的地址==；当子类重写了父类的虚函数的时候，他会把自身的虚函数表中的函数入口地址给替换掉（原来存放的是父类的），替换为子类的函数。因此，当使用父类的引用指向子类对象的时候，由于本身还是一个子类对象，所以当调用公共的`speak`接口时，他会从子类中去找入口地址。
 
 使用开发人员命令提示工具做验证：
 
@@ -1759,6 +1759,152 @@ int main()
 - 可读性强
 - 利用前期和后期的扩展以及维护
 
+```C++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//分别利用普通的写法和多态技术实现计算器
+
+//普通写法
+
+class Calculator 
+{
+public:
+
+	int getResult(string oper)
+	{
+		if (oper == "+")
+		{
+			return m_Num1 + m_Num2;
+		}
+		else if (oper == "-")
+		{
+			return m_Num1 - m_Num2;
+		}
+		else if (oper == "*")
+		{
+			return m_Num1 * m_Num2;
+		}
+		//如果想扩展新的功能，需要修改源码
+		//在真实开发中  提倡  开闭原则
+		//开闭原则：对扩展进行开放，对修改进行关闭
+	}
+
+	int m_Num1;//操作数1
+	int m_Num2;//操作数2
+};
+
+void test01()
+{
+	//创建计算器对象
+	Calculator c;
+	c.m_Num1 = 10;
+	c.m_Num2 = 10;
+
+	cout << c.m_Num1 << " + " << c.m_Num2 << " = " << c.getResult("+") << endl;
+
+	cout << c.m_Num1 << " - " << c.m_Num2 << " = " << c.getResult("-") << endl;
+
+	cout << c.m_Num1 << " * " << c.m_Num2 << " = " << c.getResult("*") << endl;
+}
+
+//利用多态实现计算器
+//多态的优势：1、组织结构清晰 2、可读性强 3、对于前期和后期的拓展以及维护性高
+//实现计算器的抽象类
+
+class AbstractCalculator 
+{
+public:
+
+	virtual int getResult()
+	{
+		return 0;
+	}
+
+	int m_Num1;
+	int m_Num2;
+
+};
+
+//加法计算器类
+class AddCalculator :public AbstractCalculator
+{
+public:
+
+	int getResult()
+	{
+		return m_Num1 + m_Num2;
+	}
+};
+
+//减法计算器类
+class SubCalculator :public AbstractCalculator
+{
+public:
+
+	int getResult()
+	{
+		return m_Num1 - m_Num2;
+	}
+};
+
+//乘法计算器类
+class MultiCalculator :public AbstractCalculator
+{
+public:
+
+	int getResult()
+	{
+		return m_Num1 * m_Num2;
+	}
+};
+
+void test02()
+{
+	//多态使用条件
+	//父类的指针或者引用指向子类对象
+
+	//加法运算
+	AbstractCalculator* abc = new AddCalculator;
+	abc->m_Num1 = 10;
+	abc->m_Num2 = 20;
+
+	cout << abc->m_Num1 << " + " << abc->m_Num2 << " = " << abc->getResult() << endl;
+
+	//new的数据存储在堆区，用完需要删除
+	delete abc;
+
+	//减法运算
+	abc = new SubCalculator;
+	abc->m_Num1 = 30;
+	abc->m_Num2 = 20;
+
+	cout << abc->m_Num1 << " - " << abc->m_Num2 << " = " << abc->getResult() << endl;
+	delete abc;
+
+	//乘法运算
+	abc = new MultiCalculator;
+	abc->m_Num1 = 30;
+	abc->m_Num2 = 20;
+
+	cout << abc->m_Num1 << " * " << abc->m_Num2 << " = " << abc->getResult() << endl;
+	delete abc;
+}
+
+int main()
+{
+	//test01();
+
+	test02();
+
+	system("pause");
+
+	return 0;
+}
+
+```
+
 总结：C++开发提倡利用多态设计程序框架，因为多态优点很多
 
 ###### 4.7.3 纯虚函数和抽象类
@@ -1766,7 +1912,7 @@ int main()
 在多态中，通常父类中虚函数的实现是毫无意义的，主要都是调用子类重写的内容。因此可以将虚函数改为纯虚函数，纯虚函数的语法：
 
 ```c++
-virtual 返回值类型 函数名 （参数列表）= 0
+virtual 返回值类型 函数名 （参数列表）= 0;
 ```
 
 当类中有了纯虚函数，这个类也成为抽象类
@@ -1774,7 +1920,7 @@ virtual 返回值类型 函数名 （参数列表）= 0
 抽象类特点：
 
 - 无法实例化对象
-- 子类必须重写先抽象类中的纯虚函数，否则也属于抽象类
+- 子类必须重写抽象类中的纯虚函数，否则也属于抽象类
 
 ###### 4.7.4 多态案例二-制作饮品
 
@@ -1894,4 +2040,197 @@ int main()
 	return 0;
 }
 ```
+
+###### 4.7.5 虚析构和纯虚析构
+
+多态使用时，如果子类中有属性开辟到堆区，那么父类指针在释放时无法调用子类的析构代码。解决方式：将父类中的析构函数改为虚析构或者纯虚析构。
+
+虚析构和纯虚析构共性：
+
+- 可以解决父类指针释放子类对象的问题
+- 都需要有具体的函数实现
+
+虚析构和纯虚析构的区别：
+
+- 如果是纯虚析构，该类属于抽象类，无法实例化对象
+
+虚析构语法：
+
+```c++
+virtual ~类名（）{}
+```
+
+纯虚析构语法：
+
+```
+virtual ~类名（）= 0；
+
+类名::~类名（）{}
+```
+
+```C++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//虚析构和纯虚析构
+
+class Animal 
+{
+public:
+
+	Animal()
+	{
+		cout << "Animal的构造函数调用" << endl;
+	}
+
+	~Animal()
+	{
+		cout << "Animal的析构函数调用" << endl;
+	}
+
+	//纯虚函数
+	virtual void speak() = 0;
+};
+
+class Cat :public Animal
+{
+public:
+
+	Cat(string name)
+	{
+		cout << "Cat构造函数调用" << endl;
+		m_Name = new string(name);
+	}
+
+	virtual void speak()
+	{
+		cout << *m_Name << "小猫在说话" << endl;
+	}
+
+	~Cat()
+	{
+		if (m_Name != NULL)
+		{
+			cout << "Cat的析构函数调用" << endl;
+			delete m_Name;
+			m_Name = NULL;
+		}
+	}
+
+	string *m_Name;
+
+};
+
+void test01()
+{
+	Animal* animal = new Cat("Tom");
+	animal->speak();
+	delete animal;
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+上述程序输出为：
+
+![image-20210909205352036](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210909205352036.png)
+
+没走`Cat`的析构函数，正常的调用顺序应该是构造函数：父类—>子类；析构函数：子类—>父类，但是此处没有走`Cat`析构函数调用，说明堆区的数据没有释放干净，导致内存泄漏
+
+```c++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//虚析构和纯虚析构
+
+class Animal 
+{
+public:
+
+	Animal()
+	{
+		cout << "Animal的构造函数调用" << endl;
+	}
+
+	////利用虚析构可以解决 父类指针释放子类对象时不干净的问题
+	//virtual ~Animal()//析构改为虚析构
+	//{
+	//	cout << "Animal的虚析构函数调用" << endl;
+	//}
+
+	//纯虚析构
+	virtual ~Animal() = 0;//纯虚析构的声明（需要声明也需要实现），有了纯虚析构之后，这个类也属于抽象类，无法实例化对象
+
+	//纯虚函数
+	virtual void speak() = 0;
+};
+
+Animal::~Animal() //纯虚析构的具体实现
+{
+	cout << "Animal的纯虚析构函数调用" << endl;
+}
+
+class Cat :public Animal
+{
+public:
+
+	Cat(string name)
+	{
+		cout << "Cat构造函数调用" << endl;
+		m_Name = new string(name);
+	}
+
+	virtual void speak()
+	{
+		cout << *m_Name << "小猫在说话" << endl;
+	}
+
+	~Cat()
+	{
+		if (m_Name != NULL)
+		{
+			cout << "Cat的析构函数调用" << endl;
+			delete m_Name;
+			m_Name = NULL;
+		}
+	}
+
+	string *m_Name;
+
+};
+
+void test01()
+{
+	Animal* animal = new Cat("Tom");
+	animal->speak();
+	//父类指针在析构时候，不会调用子类中析构函数，导致子类如果有堆区属性，出现内存泄露
+	//解决办法：就是把析构改为虚析构
+	delete animal;
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+总结：
+
+- 如果只写了虚析构，没有纯虚函数的情况下，还是可以实例化对象的
+- 拥有纯虚析构的类也属于抽象类，则一定不能实例化对象
+- 虚析构或纯虚析构就是用来解决通过父类指针释放子类对象
+- 如果子类中没有堆区数据，可以不写为虚析构或纯虚析构
 
