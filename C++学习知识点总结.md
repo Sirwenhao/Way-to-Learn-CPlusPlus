@@ -2930,6 +2930,201 @@ class Worker
     
     //显示个人信息
     virtual void showInfo() = 0;
+    //获取岗位名称
+    virtual string getDeptName() = 0;
+    
+    int m_Id;//职工编号
+    string m_Name;//职工姓名
+    int m_DeptId;//职工所在部门名称编号
+};
+```
+
+##### 5.2 创建普通员工类
+
+普通员工类继承职工抽象类，并重写父类中纯虚函数。在头文件和源文件的文件夹下分别创建`employee.h`和`employee.cpp`，`employee.h`中代码如下：
+
+```c++
+#pragma once
+#include<iostream>
+using namespace std;
+#include "worker.h"
+
+//员工类
+class Employee:public Worker
+{
+public:
+    
+    //构造函数
+    Employee(int id,string name,int dId);
+    
+    //显示个人信息
+    virtual void showInfo();
+    
+    //获取职工岗位名称
+    virtual string getDeptName();
+};
+```
+
+`employee.cpp`中代码如下：
+
+```C++
+#include "employee.h"
+
+Employee::Employee(int id, string name, int dId)
+{
+    this->m_Id = id;
+    this->m_DeptId = dId;
+}
+
+void Employee::showInfo()
+{
+	cout << "职工编号： " << this->m_Id
+		<< " \t职工姓名： " << this->m_Name
+		<< " \t岗位：" << this->getDeptName()
+		<< " \t岗位职责：完成经理交给的任务" << endl;
+}
+
+string Employee::getDeptName()
+{
+	return string("员工");
+}
+```
+
+##### 5.3 创建经理类
+
+经理类继承职工抽象类，并重写父类中纯虚函数和普通员工类似，在头文件和源文件的文件夹下分别创建`manager.h`和`manager.cpp`
+
+`manager.h`中的代码如下：
+
+```C++
+#pragma once
+#include<iostream>
+using namespace std;
+#include "worker.h"
+
+//经理类
+class Manager :public Worker
+{
+public:
+
+	Manager(int id, string name, int dId);
+
+	//显示个人信息
+	virtual void showInfo();
+
+	//获取职工岗位名称
+	virtual string getDeptName();
+};
+```
+
+`manager.cpp`中代码如下：
+
+```c++
+#include "manager.h"
+
+Manager::Manager(int id, string name, int dId)
+{
+	this->m_Id = id;
+	this->m_Name = name;
+	this->m_DeptId = dId;
+
+}
+
+void Manager::showInfo()
+{
+	cout << "职工编号： " << this->m_Id
+		<< " \t职工姓名： " << this->m_Name
+		<< " \t岗位：" << this->getDeptName()
+		<< " \t岗位职责：完成老板交给的任务,并下发任务给员工" << endl;
+}
+
+string Manager::getDeptName()
+{
+	return string("经理");
+}
+```
+
+##### 5.4 创建老板类
+
+老板类**继承**职工抽象类，并重写父类中纯虚函数，和普通员工类似，在头文件和源文件的文件夹下分别创建`boss.h` 和 `boss.cpp`文件
+
+`boss.h`中代码如下：
+
+```c++
+#pragma once
+#include<iostream>
+using namespace std;
+#include "worker.h"
+
+//老板类
+class Boss :public Worker
+{
+public:
+
+	Boss(int id, string name, int dId);
+
+	//显示个人信息
+	virtual void showInfo();
+
+	//获取职工岗位名称
+	virtual string getDeptName();
+};
+```
+
+`boss.cpp`中代码如下
+
+```c++
+#include "boss.h"
+
+Boss::Boss(int id, string name, int dId)
+{
+	this->m_Id = id;
+	this->m_Name = name;
+	this->m_DeptId = dId;
+
+}
+
+void Boss::showInfo()
+{
+	cout << "职工编号： " << this->m_Id
+		<< " \t职工姓名： " << this->m_Name
+		<< " \t岗位：" << this->getDeptName()
+		<< " \t岗位职责：管理公司所有事务" << endl;
+}
+
+string Boss::getDeptName()
+{
+	return string("总裁");
+}
+```
+
+##### 5.5 测试多态
+
+在职工管理系统`.cpp`中添加测试函数，并且运行能够产生多态
+
+测试代码如下：
+
+```c++
+#include "worker.h"
+#include "employee.h"
+#include "manager.h"
+#include "boss.h"
+
+
+void test()
+{
+	Worker * worker = NULL;
+	worker = new Employee(1, "张三", 1);
+	worker->showInfo();
+	delete worker;
+	
+	worker = new Manager(2, "李四", 2);
+	worker->showInfo();
+	delete worker;
+
+	worker = new Boss(3, "王五", 3);
+	worker->showInfo();
+	delete worker;
 }
 ```
 
