@@ -2143,7 +2143,7 @@ int main()
 
 上述程序输出为：
 
-![image-20210909205352036](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210909205352036.png)
+![image-20210909205352036](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152132078.png)
 
 没走`Cat`的析构函数，正常的调用顺序应该是构造函数：父类—>子类；析构函数：子类—>父类，但是此处没有走`Cat`析构函数调用，说明堆区的数据没有释放干净，导致内存泄漏
 
@@ -2726,7 +2726,7 @@ int main()
 
 系统界面显示效果图：
 
-![image-20210913202332913](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210913202332913.png)
+![image-20210913202332913](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152129295.png)
 
 #### 2、创建管理类
 
