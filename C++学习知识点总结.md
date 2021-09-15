@@ -1616,7 +1616,7 @@ $vbptr$是指虚基类指针，8和4是指偏移量，此时的`m_Age`只有一�
 
 ##### 4.7 多态
 
-![多态](G:\多态.png)
+![多态](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152135684.png)
 
 ###### 4.7.1 多态的基本概念：多态是C++面向对象的三大特性之一
 
@@ -1725,11 +1725,11 @@ int main()
 
 `Tips`：**空类**的大小占**一个字节**。无论是几级的**指针**，什么类型的指针都占**四个字节**。
 
-![image-20210906211346143](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906211346143.png)
+![image-20210906211346143](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152134991.png)
 
-![image-20210906212203640](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906212203640.png)
+![image-20210906212203640](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152134618.png)
 
-![image-20210906212741351](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906212741351.png)
+![image-20210906212741351](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152134614.png)
 
 ​		动态多态的原理：由于写了虚函数，==类的内部的结构改变，多了一个虚函数表指针==，这个指针指向一个虚函数表，==虚函数表内部存储的是虚函数的函数入口的地址==；当子类重写了父类的虚函数的时候，他会把自身的虚函数表中的函数入口地址给替换掉（原来存放的是父类的），替换为子类的函数入口地址。因此，当使用父类的引用指向子类对象的时候，由于本身还是一个子类对象，所以当调用公共的`speak`接口时，他会从子类中去找入口地址。
 
@@ -1737,19 +1737,19 @@ int main()
 
 不写`virtual`关键字时：对应空类的那种情况
 
-![image-20210906213922558](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906213922558.png)
+![image-20210906213922558](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152134000.png)
 
 加上关键字`virtual`之后
 
-![image-20210906214055125](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906214055125.png)
+![image-20210906214055125](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152135187.png)
 
 当子类没有发生重写时：
 
-![image-20210906214744146](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906214744146.png)
+![image-20210906214744146](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152134711.png)
 
 当子类发生重写时：`Cat`重写
 
-![image-20210906215023110](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210906215023110.png)
+![image-20210906215023110](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152135124.png)
 
 ###### 4.7.2 多态案例——计算器类
 
@@ -2143,7 +2143,7 @@ int main()
 
 上述程序输出为：
 
-![image-20210909205352036](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152132078.png)
+![image-20210909205352036](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152134521.png)
 
 没走`Cat`的析构函数，正常的调用顺序应该是构造函数：父类—>子类；析构函数：子类—>父类，但是此处没有走`Cat`析构函数调用，说明堆区的数据没有释放干净，导致内存泄漏
 
