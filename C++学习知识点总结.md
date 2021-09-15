@@ -4,7 +4,7 @@
 
 #### 1、C++单行注释与多行注释
 
-![image-20210613104730743](C:\Users\WH\AppData\Roaming\Typora\typora-user-images\image-20210613104730743.png)
+![image-20210613104730743](https://cdn.jsdelivr.net/gh/Sirwenhao/images/C:%5CUsers%5CWH%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images202109152136986.png)
 
 ```c++
 多行注释快捷键：control+k+c
