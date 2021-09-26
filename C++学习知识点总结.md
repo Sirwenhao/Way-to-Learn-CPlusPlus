@@ -3465,7 +3465,7 @@ int WorkerManager::get_EmpNum()
 
 ##### 1.2.1 函数模板语法
 
-函数模板作用：建立一个通用函数，其函数返回值类型和形参类型可以不具体制定，用一个**虚拟的类型**来代表
+函数模板作用：建立一个通用函数，其函数返回值类型和形参类型可以不具体指定，用一个**虚拟的类型**来代表
 
 语法：
 
@@ -3728,7 +3728,6 @@ void test01()
 
 	//通过空模板参数列表，强制调用函数模板
 	myPrint<>(a,b);
-
 
 	//调用重载的函数模板
 	myPrint(a, b, 100);
@@ -4007,3 +4006,170 @@ int main()
 }
 ```
 
+##### 1.3.3 类模板中成员函数创建时机
+
+类模板中成员函数的和普通类中成员函数创建时机是有区别的：
+
+- 普通类中的成员函数一开始就可以创建
+- 类模板中的成员函数在调用时才创建
+
+```c++
+#include<iostream>
+using namespace std;
+
+//类模板中成员函数的创建时机
+//类模板中成员函数在调用时才去创建
+
+class Person1
+{
+public:
+
+	void showPerson1()
+	{
+		cout << "show Person1" << endl;
+	}
+};
+
+class Person2
+{
+public:
+
+	void showPerson2()
+	{
+		cout << "show Person2" << endl;
+	}
+};
+
+template<class T>
+class MyClass
+{
+public:
+
+	T obj;
+
+	//类模板中的成员函数
+	void func1()
+	{
+		obj.showPerson1();
+	}
+
+	void func2()
+	{
+		obj.showPerson2();
+	}
+};
+
+void test01()
+{
+	MyClass<Person1>m;
+	m.func1();
+	//m.func2();//编译会出错，说明函数调用才会去创建成员函数
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+总结：类模板中的成员函数并不是一开始就创建的，在调用它的时候才会去创建
+
+##### 1.3.4 类模板对象做函数参数
+
+学习目标：类模板实例化出的对象，像函数传参的方式
+
+一共有三种传入方式：
+
+- 指定传入的类型 —— 直接显示对象的数据类型
+- 参数模板化        —— 将对象中的参数变为模板进行传递
+- 整个类模板化    —— 将这个对象类型 模板化进行传递
+
+```c++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//类模板对象做函数参数
+
+template<class T1, class T2>
+class Person
+{
+public:
+
+	Person(T1 name, T2 age)
+	{
+		this->m_Age = age;
+		this->m_Name = name;
+	}
+
+	void showPerson()
+	{
+		cout << "姓名：" << this->m_Name << "  年龄：" << this->m_Age << endl;
+	}
+
+	T1 m_Name;
+	T2 m_Age;
+};
+//1、指定传入类型
+void printPerson1(Person<string, int>& p)
+{
+	p.showPerson();
+}
+
+void test01()
+{
+	Person<string, int>p("孙", 99);
+}
+
+//2、参数模板化
+template<class T1, class T2>
+void printPerson2(Person<T1, T2>& p)
+{
+	p.showPerson();
+	cout << "T1的类型：" << typeid(T1).name() << endl;
+	cout << "T2的类型：" << typeid(T2).name() << endl;
+}
+
+void test02()
+{
+	Person<string, int>p("猪", 98);
+	printPerson2(p);
+}
+
+//3、整个类模板化
+template<class T>
+void printPerson3(T &p)
+{
+	p.showPerson();
+	cout << "T的类型：" << typeid(T).name() << endl;
+}
+
+void test03()
+{
+	Person<string, int>p("唐", 30);
+	printPerson3(p);
+}
+
+
+int main()
+{
+	test01();
+
+	test02();
+
+	test03();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+总结：
+
+- 通过类模板创建的对象，可以有三种方式向函数中进行传参
+- 使用比较广泛是第一种：指定传入的类型
