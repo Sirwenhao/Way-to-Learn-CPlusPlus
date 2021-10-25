@@ -4162,9 +4162,9 @@ int main()
 
 当类模板碰到继承时，需要注意以下几点：
 
-- 当子类继承的父类是一个类模板时，子类在声明的时候，要制定出父类中T的类型
+- 当子类继承的父类是一个类模板时，子类在声明的时候，要指定出父类中T的类型
 - 如果不指定，编译器无法给子类分配内存
-- 如果想灵活制定出父类中T的类型，子类也需要变为类模板
+- 如果想灵活指定出父类中T的类型，子类也需要变为类模板
 
 ```C++
 #include<iostream>
@@ -4216,8 +4216,235 @@ int main()
 
 总结：如果父类是类模板，子类需要指定出父类中T的数据类型
 
-1.3.6 类模板成员函数类外实现
+##### 1.3.6 类模板成员函数类外实现
 
 学习目标：能够掌握类模板中的成员函数的类外实现
 
+```C++
+#include<iostream>
+#include<string>
+using namespace std;
+
+// 类模板成员函数的类外实现
+template<class T1, class T2>
+class Person
+{
+public:
+	Person(T1 name, T2 age);
+	/*{
+		this->m_Age = age;
+		this->m_Name = name;
+	}*/
+
+	void showPerson();
+	/*{
+		cout << "姓名: " << this->m_Name << endl;
+		cout << "年龄: " << this->m_Age << endl;
+	}*/
+
+	T1 m_Name;
+	T2 m_Age;
+};
+
+//构造函数的类外实现
+template<class T1,class T2>//其次加上模板
+Person<T1,T2>::Person(T1 name, T2 age)  //首先指明作用域Person::；最后在Person后面加上<T1,T2>声明是类模板的类外实现
+{
+	this->m_Age = age;
+	this->m_Name = name;
+}
+
+//成员函数的类外实现
+template<class T1, class T2>//其次加上模板
+void Person<T1, T2>::showPerson()  //首先指明作用域Person::；最后在Person后面加上<T1,T2>声明是类模板的类外实现
+{
+	cout << "姓名: " << this->m_Name << endl;
+	cout << "年龄: " << this->m_Age << endl;
+}
+
+void test01()
+{
+	Person<string, int>P("Tom", 20);
+	P.showPerson();
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+	
+	return 0;
+}
+```
+
 总结：类模板的成员函数类外实现时，需要加上模板参数列表
+
+##### 1.3.7 类模板分文件编写
+
+学习目标：掌握类模板成员函数分文件编写产生的问题以及解决方式
+
+问题：类模板中成员函数创建时机时在调用阶段，导致份文件编写时链接不到
+
+解决：
+
+- 解决方式1：直接包含`.cpp`源文件
+- 解决方式2：将声明和实现写到同一个文件中，并更改后缀名为`.hpp`，`hpp`是约定的名称，不是强制的
+
+`person.hpp`中代码
+
+```C++
+#pragma once
+#include <iostream>
+#include<string>
+using namespace std;
+
+template<class T1, class T2>
+class Person
+{
+public:
+
+	Person(T1 name, T2 age);
+
+	void showPerson();
+
+	T1 m_Name;
+	T2 m_Age;
+
+};
+
+//构造函数 类外实现
+template<class T1, class T2>
+Person<T1, T2>::Person(T1 name, T2 age)
+{
+	this->m_Name = name;
+	this->m_Age = age;
+}
+
+//成员函数 类外实现
+template<class T1, class T2>
+void Person<T1, T2>::showPerson()
+{
+	cout << "姓名为：" << this->m_Name << endl;
+	cout << "年龄为：" << this->m_Age << endl;
+}
+```
+
+类模板分文件编写`.cpp`中代码
+
+```C++
+#include<iostream>
+using namespace std;
+
+//#include "person.h"
+#include "person.cpp" //解决方式1，包含cpp源文件
+
+//解决方式2, 将声明和实现写到一起，文件后缀名改为.hpp
+#include "person.hpp"
+
+void test01()
+{
+	Person <string, int>p("Jerry", 18);
+	p.showPerson();
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+总结：主流的解决方式是第二种，将类模板成员函数写到一起，并将后缀名改为`.hpp`
+
+##### 1.3.8 类模板与友元 
+
+学习目标：掌握类模板配合友元函数的类内和类外实现
+
+全局函数类内实现 - 直接在类内声明友元即可
+
+全局函数类外实现 - 需要提前让编译器知道全局函数的存在
+
+```C++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//全局函数配合友元 类外实现 - 先做函数模板生命，下方再做函数模板定义，再做友元
+//提前让编译器知道Person类存在
+template<class T1, class T2>
+class Person;
+
+//如果声明了函数模板，可以将实现写到后面，否则需要将实现体写道类的前面让编译器提前看到
+//template<class T1, class T2> void printPerson2(Person<T1, T2> & p);
+
+template<class T1, class T2>
+void printPerson2(Person<T1, T2> p)
+{
+	cout << "类外实现姓名为：" << p.m_Name << endl;
+	cout << "类外实现年龄为：" << p.m_Age << endl;
+}
+
+
+template<class T1, class T2>
+class Person
+{
+
+	//全局函数 类内实现
+	friend void printPerson(Person<T1, T2> p)
+	{
+		cout << "姓名为：" << p.m_Name << endl;
+		cout << "年龄为：" << p.m_Age << endl;
+	}
+
+	//全局函数 类外实现
+	//加空模板参数列表<>,此时仍会报错
+	//如果全局函数 是类外实现，需要让编译器提前知道这个函数的存在
+	friend void printPerson2<>(Person<T1, T2> p);
+
+public:
+	Person(T1 name, T2 age)
+	{
+		this->m_Name = name;
+		this->m_Age = age;
+	}
+
+private:
+	T1 m_Name;
+	T2 m_Age;
+};
+
+
+
+//1、全局函数在类内实现
+void test01()
+{
+	Person<string, int>p("Tom", 20);
+
+	printPerson(p);
+}
+
+//2、全局函数在类外实现
+void test02()
+{
+	Person<string, int>p("Jerry", 20);
+
+	printPerson2(p);
+}
+
+int main()
+{
+	//test01();
+
+	test02();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+总结：建议全局函数做类内实现，用法简单，而且编译器可以直接识别
