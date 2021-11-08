@@ -3662,7 +3662,7 @@ int main()
 }
 ```
 
-总结：建议使用显示指定类型的方式，调用函数模板，因为可以自己确定通用类型`T`
+总结：建议使用==显示指定类型==的方式，调用函数模板，因为可以自己确定通用类型`T`
 
 ##### 1.2.5 普通函数与函数模板的调用规则
 
@@ -3720,7 +3720,7 @@ void test01()
 	char c1 = 'a';
 	char c2 = 'b';
 
-	myPrint(c1, c2);//普通函数和模板都可以调用，但是调用函数模板才是更优的选择
+	myPrint(c1, c2);//普通函数和模板都可以调用，但是调用函数模板才是更优的选择，因为普通函数是整型的，若使用普通函数需要强制转换类型会更麻烦
 }
 
 int main()
@@ -3762,7 +3762,7 @@ void f(T a, T b)
 }
 ```
 
-在上述代码中，如果`T`的数据类型传入的是像`Person`这样的自定义数据类型，与无法正常运行。因此C++为了解决这种问题，提供**模板的重载**，可以为这些特定的类型提供具体化的模板
+在上述代码中，如果`T`的数据类型传入的是像`Person`这样的自定义数据类型，则无法正常运行。因此`C++`为了解决这种问题，提供**模板的重载**，可以为这些特定的类型提供具体化的模板
 
 ```C++
 #include<iostream>
@@ -3879,7 +3879,7 @@ template<typename T>
 解释：
 
 - `template` —— 声明创建模板
-- `typename` —— 表面其后面的符号是一种数据类型，可以用`class`代替
+- `typename` —— 表明其后面的符号是一种数据类型，可以用`class`代替
 - `T` —— 通用的数据类型，名称可以替换，通常为大写字母
 
 ```c++
@@ -3889,8 +3889,8 @@ using namespace std;
 
 //类模板
 
-template<class NameType,class AgeType>
-class Person 
+template<class NameType,class AgeType>//声明类模板
+class Person   //定义类模板
 {
 public:
 	Person(NameType name,AgeType age)
@@ -4468,3 +4468,296 @@ int main()
 如果是类模板，做分文件编写时，成员函数是不好做的，因为成员函数不会被创建，成员函数的创建时机是在调用的时候，因此一般将声明和实现写在一个文件中，即上述的`hpp`文件
 
 ![image-20211101210219322](https://raw.githubusercontent.com/Sirwenhao/images/main/images202111012102435.png)
+
+`A121.类模板案例.cpp`
+
+```c++
+#include<iostream>
+#include"MyArray.hpp"
+using namespace std;
+
+void printIntArray(MyArray<int>& arr) 
+{
+	for (int i = 0; i < arr.getSize(); i++)
+	{
+		cout << arr[i] << " ";
+	}
+	cout << endl;
+}
+
+
+//测试内置数据类型
+void test01()
+{
+	MyArray<int> array1(10);
+	for (int i = 0; i < 10; i++)
+	{
+		array1.Push_Back(i);
+	}
+	cout << "array1打印输出：" << endl;
+	printIntArray(array1);
+	cout << "array1的大小：" << array1.getSize() << endl;
+	cout << "array1的容量：" << array1.getCapacity() << endl;
+
+	cout << "--------------------------" << endl;
+
+	MyArray<int> array2(array1);
+	array2.Pop_Back();
+	cout << "array2打印输出：" << endl;
+	printIntArray(array2);
+	cout << "array2的大小：" << array2.getSize() << endl;
+	cout << "array2的容量：" << array2.getCapacity() << endl;
+}
+
+//测试自定义数据类型
+class Person {
+public:
+	Person() {}
+	Person(string name, int age) {
+		this->m_Name = name;
+		this->m_Age = age;
+	}
+public:
+	string m_Name;
+	int m_Age;
+};
+
+void printPersonArray(MyArray<Person>& personArr)
+{
+	for (int i = 0; i < personArr.getSize(); i++) {
+		cout << "姓名：" << personArr[i].m_Name << " 年龄： " << personArr[i].m_Age << endl;
+	}
+
+}
+
+void test02()
+{
+	//创建数组
+	MyArray<Person> pArray(10);
+	Person p1("孙悟空", 30);
+	Person p2("韩信", 20);
+	Person p3("妲己", 18);
+	Person p4("王昭君", 15);
+	Person p5("赵云", 24);
+
+	//插入数据
+	pArray.Push_Back(p1);
+	pArray.Push_Back(p2);
+	pArray.Push_Back(p3);
+	pArray.Push_Back(p4);
+	pArray.Push_Back(p5);
+
+	printPersonArray(pArray);
+
+	cout << "pArray的大小：" << pArray.getSize() << endl;
+	cout << "pArray的容量：" << pArray.getCapacity() << endl;
+
+}
+
+
+
+int main()
+{
+	test01();
+
+	test02();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+`MyArray.hpp`
+
+```c++
+//自己的通用的数组类
+
+#pragma once
+#include <iostream>
+using namespace std;
+
+template<class T>
+class MyArray 
+{
+public:
+
+	//有参构造，传入参数为容量
+	MyArray(int capacity)
+	{
+		cout << "MyArray的有参构造调用" << endl;
+		this->m_Capacity = capacity;
+		this->m_Size = 0;
+		this->pAddress = new T[this->m_Capacity];
+	}
+
+	//拷贝构造,为了防止浅拷贝的问题
+	MyArray(const MyArray& arr)
+	{
+		cout << "MyArray的拷贝构造调用" << endl;
+		this->m_Capacity = arr.m_Capacity;
+		this->m_Size = arr.m_Size;
+		//this->pAddress = arr.pAddress;//此行代码会导致浅拷贝的问题
+
+		//深拷贝，重新在堆区开辟新的内存空间
+		this->pAddress = new T[arr.m_Capacity];
+
+		//将arr中的数据都拷贝过来
+		for (int i = 0; i < this->m_Size; i++)
+		{
+			this->pAddress[i] = arr.pAddress[i];
+		}
+	}
+
+	//operator= 防止浅拷贝问题
+	MyArray& operator=(const MyArray& arr)
+	{
+		cout << "MyArray 的 operator= 构造调用" << endl;
+		//先判断原来队去是否有数据，如果有先释放
+		if (this->pAddress != NULL)
+		{
+			delete[] this->pAddress;
+			this->pAddress = NULL;
+			this->m_Capacity = 0;
+			this->m_Size = 0;
+		}
+
+		//深拷贝
+		this->m_Capacity = arr.m_Capacity;
+		this->m_Size = arr.m_Size;
+		this->pAddress = new T[arr.m_Capacity];
+		for (int i = 0; i < this->m_Size; i++)
+		{
+			this->pAddress[i] = arr.pAddress[i];
+		}
+		return *this;
+	}
+
+	//尾插法
+	void Push_Back(const T& val)
+	{
+		//判断容量是否等于大小
+		if (this->m_Capacity == this->m_Size)
+		{
+			return;
+		}
+		this->pAddress[this->m_Size] = val;
+		this->m_Size++;//更新数组的大小
+	}
+
+	//尾删法
+	void Pop_Back()
+	{
+		//让用户访问不到最后一个元素，即为尾删，逻辑删除
+		if (this->m_Size == 0)
+		{
+			return;
+		}
+		this->m_Size--;
+	}
+
+	//通过下标的方式访问数组中的元素,如果函数调用还想作为等号的左值存在，则需要返回其引用
+	T& operator[](int index)
+	{
+		return this->pAddress[index];
+	}
+
+	//返回数组容量
+	int getCapacity()
+	{
+		return this->m_Capacity;
+	}
+
+	//返回数组大小
+	int getSize()
+	{
+		return this->m_Size;
+	}
+
+
+
+	//析构函数:将堆区创建的数据释放
+	~MyArray()
+	{
+		if (this->pAddress != NULL)
+		{
+			cout << "MyArray的析构函数调用" << endl;
+			delete[] this->pAddress;
+			this->pAddress = NULL;
+		}
+	}
+
+private:
+
+	T* pAddress;//指针指向堆区开辟的真实数组
+
+	int m_Capacity;//数组容量
+
+	int m_Size;//数组大小
+
+};
+```
+
+### 2 `STL`初识
+
+#### 2.1 `STL`的诞生
+
+- 长久以来，软件界一直希望建立一种可重复利用的东西
+- `C++`的**面向对象**和**泛型编程**思想，目的就是复用性的提升
+- 大多数情况下，数据结构和算法都未能有一套标准，导致被迫从事大量重复工作
+- 为了建立数据结构和算法的一套标准，诞生了`STL`
+
+#### 2.2 `STL`基本概念
+
+- `STL(Standard Template Library)`，标准模板库
+- `STL`从广义上分为：容器（`container`）算法（`algorithm`）迭代器（`iterator`）
+- **容器**和**算法**之间通过**迭代器**进行无缝连接
+- `STL`几乎所有的代码都采用了模板类或者模板函数
+
+#### 2.3 `STL`六大组件
+
+`STL`大体分为六大组件，分别是：**容器**、**算法**、**迭代器**、**仿函数**、**适配器（配接器）**、**空间配置器**
+
+- 容器：各种数据结构，如`vector、list、deque、set、map`等，用来存放数据
+- 算法：各种常用的算法，如`sort、find、copy、for_each`等
+- 迭代器：扮演了容器与算法之间的胶合剂
+- 仿函数：行为类似函数，可作为算法的某种策略
+- 适配器：一种用来修饰容器或者仿函数或迭代器接口的东西
+- 空间配置器：负责空间的配置与管理
+
+#### 2.4 `STL`中容器、算法、迭代器
+
+**容器**：置物之所也
+
+`STL`容器就是将运用**最广泛的一些数据结构**实现出来
+
+常用的数据结构：数组、链表、树、栈、队列、集合、映射表等。这些容器分为**序列式容器**和**关联式容器**两种：
+
+- 序列式容器：强调值的排序，序列式容器中的每个元素均有固定的位置
+- 关联式容器：二叉树结构，各元素之间没有严格的物理上的顺序关系
+
+**算法**：问题之解法也
+
+有限的步骤，解决逻辑或数学上的问题，这一门学科我们叫做算法(Algorithms)
+
+算法分为：质变算法和非质变算法
+
+- 质变算法：是指运算过程中会更改区间内的元素的内容。例如拷贝，替换，删除等
+- 非质变算法：是指运算过程中不会更改区间内的元素内容，例如查找、计数、遍历、寻找极值等
+
+**迭代器**：容器和算法之间的粘合剂
+
+提供方一种方法，使之能够依序寻访某个容器所含的各个元素，而又无需暴露该容器的内部表示方式。每个容器都有自己专属的迭代器。迭代器类似于指针，初学阶段我们可以先理解迭代器为指针。
+
+迭代器的种类：
+
+| 种类           | 功能                                                     | 支持运算                                 |
+| -------------- | -------------------------------------------------------- | ---------------------------------------- |
+| 输入迭代器     | 对数据的只读访问                                         | 制度，支持++、==、！=                    |
+| 输出迭代器     | 对数据的只写访问                                         | 只写，支持++                             |
+| 前向迭代器     | 读写操作，并能向前推进迭代器                             | 读写，支持++、==、！=                    |
+| 双向迭代器     | 读写操作，并能向前和向后操作                             | 读写，支持++、- -                        |
+| 随机访问迭代器 | 读写操作，可以以跳跃的方式访问任意数据，功能最强的迭代器 | 读写，支持++、- -、[n]、-n、<、<=、>、>= |
+
+常用的容器中迭代器种类为双向迭代器和随机访问迭代器
+
