@@ -3413,16 +3413,6 @@ int WorkerManager::get_EmpNum()
 }
 ```
 
-截至视频`P158`
-
-
-
-
-
-
-
-
-
 
 
 ## C++提高编程
@@ -4284,7 +4274,7 @@ int main()
 
 学习目标：掌握类模板成员函数分文件编写产生的问题以及解决方式
 
-问题：类模板中成员函数创建时机时在调用阶段，导致份文件编写时链接不到
+问题：类模板中成员函数创建时机时在调用阶段，导致分文件编写时链接不到
 
 解决：
 
@@ -4831,3 +4821,208 @@ int main()
 ##### 2.5.2 Vector存放自定义数据类型
 
 学习目标：`vector`中存放自定义数据类型，并打印输出
+
+```C++
+#include<iostream>
+using namespace std;
+#include<vector>
+#include<string>
+
+//vector容器中存放自定义的数据类型
+class Person
+{
+public:
+	Person(string name, int age)
+	{
+		this->m_Name = name;
+		this->m_Age = age;
+	}
+
+	string m_Name;
+	int m_Age;
+};
+
+void test01()
+{
+	vector<Person>v;
+
+	Person p1("a", 10);
+	Person p2("b", 20);
+	Person p3("c", 30);
+	Person p4("d", 40);
+	Person p5("e", 50);
+
+	//向容器中添加数据
+	v.push_back(p1);
+	v.push_back(p2);
+	v.push_back(p3);
+	v.push_back(p4);
+	v.push_back(p5);
+
+	//遍历容器中的数据
+	for (vector<Person>::iterator it = v.begin(); it != v.end(); it++)
+	{
+		cout << "姓名：" << (*it).m_Name << "  年龄：" << (*it).m_Age << endl;
+		cout << "姓名：" << it->m_Name << "  年龄：" << it->m_Age << endl;
+	}
+}
+
+//存放自定义数据类型 指针
+void test02()
+{
+	vector<Person*>v;
+
+	Person p1("a", 10);
+	Person p2("b", 20);
+	Person p3("c", 30);
+	Person p4("d", 40);
+	Person p5("e", 50);
+
+	//向容器中添加数据（添加的是上述五组数据的地址,因此要用取地址符接收）
+	v.push_back(&p1);
+	v.push_back(&p2);
+	v.push_back(&p3);
+	v.push_back(&p4);
+	v.push_back(&p5);
+
+	for (vector<Person*>::iterator it = v.begin(); it != v.end(); it++)
+	{
+		cout << "姓名：" << (*it)->m_Name << "  年龄：" << (*it)->m_Age << endl;
+	}
+}
+
+int main()
+{
+	//test01();
+	test02();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+2.5.3 `Vector`容器嵌套容器
+
+学习目标：容器中嵌套容器，将所有数据进行遍历输出
+
+```C++
+#include<iostream>
+using namespace std;
+#include<vector>
+
+//容器嵌套容器
+void test01()
+{
+	vector<vector<int>>v;
+
+	//创建小容器
+	vector<int>v1;
+	vector<int>v2;
+	vector<int>v3;
+	vector<int>v4;
+	vector<int>v5;
+
+	//向小容器中添加数据
+	for (int i = 0; i < 5; i++)
+	{
+		v1.push_back(i + 1);
+		v2.push_back(i + 2);
+		v3.push_back(i + 3);
+		v4.push_back(i + 4);
+		v5.push_back(i + 5);
+	}
+
+	//将小容器中的数据放入大容器中
+	v.push_back(v1);
+	v.push_back(v2);
+	v.push_back(v3);
+	v.push_back(v4);
+	v.push_back(v5);
+
+	//通过大容器将所有的数据遍历
+	for (vector<vector<int>>::iterator it = v.begin(); it != v.end(); it++)
+	{
+		//(*it) ---- 容器 vector<int>,*it是什么只需看vector<>的<>内是什么即可
+		for (vector<int>::iterator vit = (*it).begin(); vit != (*it).end(); vit++)
+		{
+			cout << *vit << "  ";
+		}
+		cout << endl;
+	}
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+注意：`for`循环的迭代器中的`it`想要查看其是什么类型只需要查看相应的`vector<>`中括号`<>`内是什么内容即可，一般都是对应的。
+
+### 3 `STL`常用容器
+
+#### 3.1 `string`容器
+
+##### 3.1.1 `string`基本概念
+
+本质：`string`是`C++`风格的字符串，而`string`本质上是一个类
+
+`string`和`char*`区别
+
+- `char*`是一个指针
+- `string`是一个类，类内部封装了`char*`，管理这个字符串，是一个`char*`型的容器
+
+特点：
+
+string类内部封装了很多成员方法
+
+例如：查找`find`，拷贝`copy`，删除`delete`、替换`replace`、插入`insert`
+
+`string`管理`char*`所分配的内存，不用担心复制越界和取值越界等，由类内部进行负责
+
+##### 3.1.2 `string`构造函数
+
+构造函数原型：
+
+- `string();`  //创建一个空的字符串 例如：`string str;`
+- `string(const char* s);`  //使用字符串`s`初始化
+- `string(const string& str);`  //使用一个`string`对象初始化另一个`string`对象
+- `string(int n, char c);` //使用`n`个字符`c`初始化
+
+```C++
+#include<iostream>
+using namespace std;
+#include<string>
+
+//string的构造函数
+void test01()
+{
+	string s1; //默认构造
+	
+	const char* str = "hello world";
+	string s2(str);
+
+	cout << "s2= " << s2 << endl;
+
+	string s3(s2);
+	cout << "s3= " << s3 << endl;
+
+	string s4(10, 'a');
+	cout << "s4= " << s4 << endl;
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
