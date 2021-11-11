@@ -4237,7 +4237,7 @@ public:
 };
 
 //构造函数的类外实现
-template<class T1,class T2>//其次加上模板
+template<class T1, class T2>  //其次加上模板
 Person<T1,T2>::Person(T1 name, T2 age)  //首先指明作用域Person::；最后在Person后面加上<T1,T2>声明是类模板的类外实现
 {
 	this->m_Age = age;
@@ -4743,9 +4743,9 @@ private:
 
 | 种类           | 功能                                                     | 支持运算                                 |
 | -------------- | -------------------------------------------------------- | ---------------------------------------- |
-| 输入迭代器     | 对数据的只读访问                                         | 制度，支持++、==、！=                    |
+| 输入迭代器     | 对数据的只读访问                                         | 只读，支持++、==、!=                     |
 | 输出迭代器     | 对数据的只写访问                                         | 只写，支持++                             |
-| 前向迭代器     | 读写操作，并能向前推进迭代器                             | 读写，支持++、==、！=                    |
+| 前向迭代器     | 读写操作，并能向前推进迭代器                             | 读写，支持++、==、!=                     |
 | 双向迭代器     | 读写操作，并能向前和向后操作                             | 读写，支持++、- -                        |
 | 随机访问迭代器 | 读写操作，可以以跳跃的方式访问任意数据，功能最强的迭代器 | 读写，支持++、- -、[n]、-n、<、<=、>、>= |
 
@@ -5014,6 +5014,127 @@ void test01()
 
 	string s4(10, 'a');
 	cout << "s4= " << s4 << endl;
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+##### 3.1.3 `string`赋值操作
+
+功能描述：给`string`字符串进行赋值
+
+赋值的函数原型为：
+
+- `string& operator=(const char* s);`   //`char*`类型字符串 赋值给当前的字符串
+- `string& operator=(const string &s);`   //把字符串`s`赋给当前的字符串
+- `string& operator=(char c);`   //字符赋值给当前的字符串
+- `string& assign=(const char *s);`   //把字符串`s`赋值给当前的字符串
+- `string& assign(const char *s, int n);`   //把字符串`s`的前`n`个字符赋给当前的字符串
+- `string& assign(const string &s);`   //把字符串`s`赋给当前字符串
+- `string& assign(int n, char c);`   //用`n`个字符`c`赋给当前的字符串
+
+```C++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//string赋值操作
+void test01()
+{
+	string str1;
+	str1 = "hello world";
+	cout << "str1 = " << str1 << endl;
+
+	string str2;
+	str2 = str1;
+	cout << "str2 = " << str2 << endl;
+
+	string str3;
+	str3 = 'a';
+	cout << "str3 = " << str3 << endl;
+
+	string str4;
+	str4.assign("hello C++");
+	cout << "str4 = " << str4 << endl;
+
+	string str5;
+	str5.assign("hello C++", 5);
+	cout << "str5 = " << str5 << endl;
+
+	string str6;
+	str6.assign(str5);
+	cout << "str6 = " << str6 << endl;
+
+	string str7;
+	str7.assign(10, 'c');
+	cout << "str7 = " << str7 << endl;
+}
+
+int main()
+{
+	test01();
+
+	system("pause");
+
+	return 0;
+}
+```
+
+总结：string的赋值方式有很多，`operator=`这种方式是比较实用的
+
+##### 3.1.4 `string`字符串拼接
+
+功能描述：实现在字符串末尾拼接字符串
+
+函数原型：
+
+- `string& operator+=(const char* str);`   //重载+=操作符
+- `string& operator+=(const char c);`   //重载+=操作符
+- `string& operator+=(const string& str);`   //重载+=操作符
+- `string& append(const char *s);`   //把字符串`s`连接到当前字符串的末尾
+- `string& append(const char *s, int n);`   //把字符串`s`的前`n`个字符连接到当前字符串的结尾
+- `string& append(const string &s);`   //同`operator+=(const string& str)`
+- `string& append(const string &s, int pos, int n);`   //字符串`s`中从`pos`开始的`n`个字符连接到字符串结尾
+
+```C++
+#include<iostream>
+#include<string>
+using namespace std;
+
+//string字符串拼接的操作
+
+void test01()
+{
+	string str1 = "我";
+	str1 += "爱玩游戏";
+	cout << "str1 = " << str1 << endl;
+
+	str1 += ':';
+	cout << "str1 = " << str1 << endl;
+
+	string str2 = "tanchishe";
+	str1 += str2;
+	cout << "str2 = " << str2 << endl;
+
+	string str3 = "I";
+	str3.append(" love ");
+	cout << "str3 = " << str3 << endl;
+
+	str3.append("foods noodles and meets", 8);
+	cout << "str3 = " << str3 << endl;
+
+	str3.append(str2);
+	cout << "str3 = " << str3 << endl;
+
+	str3.append(str2, 0, 3);  //参数0代表截取字符开始的位置，参数3代表截取字符的个数
+	cout << "str3 = " << str3 << endl;
 }
 
 int main()
